@@ -14,8 +14,6 @@ public class task1 {
             k += 2;
             factorial *= k * (k - 1);
             tempX = tempX * x * x;
-
-
         }
         return result;
     }
