@@ -20,11 +20,10 @@ public class SinTest {
         System.out.println("Запускаем тестики на синус...");
     }
 
-
     @ParameterizedTest
     @DisplayName("Тест на соответствие с Math.sin()")
-    @ValueSource(doubles = {0, 1})
-    void checkMathSin(double input) {
+    @ValueSource(doubles = {0, 1, 0.5, 0.3, 0.2, 0.6, -1, -0.6, -0.4, -0.3})
+    void checkForMathSin(double input) {
         double result =  task1.calc_sin(TERMS_COUNT, input);
         assertAll(
                 ()-> assertEquals(Math.sin(input), result, EPSILON)
@@ -32,13 +31,46 @@ public class SinTest {
     }
 
     @ParameterizedTest
-    @DisplayName("Тест на табличные значения")
+    @DisplayName("Тест на единицы")
+    @ValueSource(doubles = {-3*Math.PI/2, Math.PI/2, 5*Math.PI/2})
+    void checkOnes(double input) {
+        double result =  task1.calc_sin(TERMS_COUNT, input);
+        assertAll(
+                ()-> assertEquals(1, result, EPSILON)
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Тест на нули")
+    @ValueSource(doubles = {0, Math.PI, 2*Math.PI, 3*Math.PI})
+    void checkZeroes(double input) {
+        double result =  task1.calc_sin(TERMS_COUNT, input);
+        assertAll(
+                ()-> assertEquals(0, result, EPSILON)
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Тест на табличные значения с Math.sin()")
+    @ValueSource(doubles = {0, Math.PI/6, Math.PI/4, Math.PI/3, Math.PI/2, 5*Math.PI/6, 3*Math.PI/4, 3*Math.PI/3})
+    void checkMathSinTable(double input) {
+        double result =  task1.calc_sin(TERMS_COUNT, input);
+        assertAll(
+                ()-> assertEquals(Math.sin(input), result, EPSILON)
+        );
+    }
+
+    @ParameterizedTest
+    @DisplayName("Тест на табличные значения (высчитано с помощью супер-точной ЭВМ)")
     @CsvSource({
-            "0, 0",
-            "1.57079632679, 1",
-            "3.14159265359, 0",
-            "4.71238898038, -1",
-            "6.28318530718, 0"
+            "0,0.0",
+            "0.5235987756,0.5",
+            "0.7853981634,0.7071067812",
+            "1.0471975512,0.8660254038",
+            "1.5707963268,1.0",
+            "2.61799387799,0.5",
+            "2.35619449019,0.7071067812",
+            "3.1415926536,0.0"
     })
     void checkTableValues(double input, double expected) {
         double result =  task1.calc_sin(TERMS_COUNT, input);
