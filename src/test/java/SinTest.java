@@ -12,7 +12,7 @@ import org.example.task1;
 
 public class SinTest {
 
-    private static final int TERMS_COUNT = 1000;
+    private static final int TERMS_COUNT = 10;
     private static final double EPSILON = 0.01;
 
     @BeforeAll

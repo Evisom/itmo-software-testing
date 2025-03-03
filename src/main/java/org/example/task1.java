@@ -7,7 +7,7 @@ public class task1 {
         int k = 1;
         int c = 1;
         double tempX = x;
-        int factorial = 1;
+        long factorial = 1;
         for (int i = 1; i <= n; i++) {
             result += (c * tempX) / (factorial);
             c = c * (-1);
