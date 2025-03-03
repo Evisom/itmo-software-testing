@@ -7,7 +7,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.example.task1;
+import org.example.Task1;
 
 
 public class SinTest {
@@ -24,7 +24,7 @@ public class SinTest {
     @DisplayName("Тест на соответствие с Math.sin()")
     @ValueSource(doubles = {0, 1, 0.5, 0.3, 0.2, 0.6, -1, -0.6, -0.4, -0.3})
     void checkForMathSin(double input) {
-        double result =  task1.calc_sin(TERMS_COUNT, input);
+        double result =  Task1.calc_sin(TERMS_COUNT, input);
         assertAll(
                 ()-> assertEquals(Math.sin(input), result, EPSILON)
         );
@@ -34,7 +34,7 @@ public class SinTest {
     @DisplayName("Тест на единицы")
     @ValueSource(doubles = {-3*Math.PI/2, Math.PI/2, 5*Math.PI/2})
     void checkOnes(double input) {
-        double result =  task1.calc_sin(TERMS_COUNT, input);
+        double result =  Task1.calc_sin(TERMS_COUNT, input);
         assertAll(
                 ()-> assertEquals(1, result, EPSILON)
         );
@@ -44,7 +44,7 @@ public class SinTest {
     @DisplayName("Тест на нули")
     @ValueSource(doubles = {0, Math.PI, 2*Math.PI, 3*Math.PI})
     void checkZeroes(double input) {
-        double result =  task1.calc_sin(TERMS_COUNT, input);
+        double result =  Task1.calc_sin(TERMS_COUNT, input);
         assertAll(
                 ()-> assertEquals(0, result, EPSILON)
         );
@@ -54,7 +54,7 @@ public class SinTest {
     @DisplayName("Тест на табличные значения с Math.sin()")
     @ValueSource(doubles = {0, Math.PI/6, Math.PI/4, Math.PI/3, Math.PI/2, 5*Math.PI/6, 3*Math.PI/4, 3*Math.PI/3})
     void checkMathSinTable(double input) {
-        double result =  task1.calc_sin(TERMS_COUNT, input);
+        double result =  Task1.calc_sin(TERMS_COUNT, input);
         assertAll(
                 ()-> assertEquals(Math.sin(input), result, EPSILON)
         );
@@ -73,7 +73,7 @@ public class SinTest {
             "3.1415926536,0.0"
     })
     void checkTableValues(double input, double expected) {
-        double result =  task1.calc_sin(TERMS_COUNT, input);
+        double result =  Task1.calc_sin(TERMS_COUNT, input);
         assertEquals(expected, result, EPSILON);
     }
 }
