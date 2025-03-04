@@ -1,7 +1,6 @@
 package org.example;
 
-public class Task1 {
-
+public class Sin {
     public static double calc_sin(int n, double x) {
         double normX = x % (2 * Math.PI);
         double result = 0;

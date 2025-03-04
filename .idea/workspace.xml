@@ -57,11 +57,15 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+<<<<<<< Updated upstream
         <option value="Enum" />
+=======
+>>>>>>> Stashed changes
         <option value="Class" />
       </list>
     </option>
   </component>
+<<<<<<< Updated upstream
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -98,6 +102,8 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
+=======
+>>>>>>> Stashed changes
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.SinTest.executor": "Run",
