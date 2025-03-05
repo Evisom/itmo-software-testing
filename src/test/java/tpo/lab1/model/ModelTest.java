@@ -1,15 +1,16 @@
 package tpo.lab1.model;
 
-import tpo.lab1.model.enums.ClothingType;
-import tpo.lab1.model.enums.Emotion;
-import tpo.lab1.model.enums.EventType;
-import tpo.lab1.model.enums.LockStatus;
+import tpo.lab1.model.enums.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class ModelTest {
@@ -29,7 +30,7 @@ class ModelTest {
         room = new Room();
         person = new Person("Альтаир", "Маг", Emotion.ANGRY, university);
         door = new Door(false, LockStatus.LOCKED);
-        event = new Event(EventType.INVASION, room, "Маги ворвались в зал");
+        event = new Event(EventType.INVASION, room, "Маги ворвались в зал", new BlockAttempt());
     }
     @Test
     @DisplayName("Создание университета")
@@ -91,7 +92,7 @@ class ModelTest {
     @CsvSource({"INVASION", "CONVERSATION", "FIGHT"})
     @DisplayName("Проверка типов событий")
     void testEventTypes(EventType eventType) {
-        Event testEvent = new Event(eventType, room, "Тестовое событие");
+        Event testEvent = new Event(eventType, room, "Тестовое событие",new BlockAttempt());
         assertEquals(eventType, testEvent.getType());
     }
     @Test
@@ -121,4 +122,63 @@ class ModelTest {
     void testEmptyEvent() {
         assertTrue(event.getParticipants().isEmpty());
     }
+
+
+
+    @Test
+    public void testBlockAttemptFailed() {
+        University university = new University("Kruxwan University", "Blue Belt");
+        Person intruder1 = new Person("Intruder 1", "Scholar", Emotion.ANGRY, university);
+        Person intruder2 = new Person("Intruder 2", "Scholar", Emotion.ANGRY, university);
+        Person butler = new Person("Butler", "Servant", Emotion.SCARED, null);
+
+        BlockAttempt blockAttempt = new BlockAttempt(
+                List.of(butler),
+                Arrays.asList(intruder1, intruder2),
+                BlockResult.TSCHETNO
+        );
+
+        assertEquals(BlockResult.TSCHETNO, blockAttempt.getResult());
+    }
+
+    @Test
+    public void testBlockAttemptSuccessful() {
+        University university = new University("Kruxwan University", "Blue Belt");
+        Person intruder = new Person("Intruder", "Scholar", Emotion.ANGRY, university);
+        Person guard = new Person("Guard", "Security", Emotion.CALM, null);
+
+        BlockAttempt blockAttempt = new BlockAttempt(
+                List.of(guard),
+                List.of(intruder),
+                BlockResult.SUCCESSFUL
+        );
+
+        assertEquals(BlockResult.SUCCESSFUL, blockAttempt.getResult());
+    }
+
+    @Test
+    public void testEventWithBlockAttempt() {
+        University university = new University("Kruxwan University", "Blue Belt");
+        Person intruder = new Person("Intruder", "Scholar", Emotion.ANGRY, university);
+        Person guard = new Person("Guard", "Security", Emotion.CALM, null);
+        Room room = new Room();
+
+        BlockAttempt blockAttempt = new BlockAttempt(
+                List.of(guard),
+                List.of(intruder),
+                BlockResult.SUCCESSFUL
+        );
+
+        Event event = new Event(EventType.INVASION, room, "Attempted break-in", blockAttempt);
+        event.addParticipant(intruder);
+        event.addParticipant(guard);
+
+        assertEquals(BlockResult.SUCCESSFUL, event.getBlockResult());
+    }
+
+
+
+
+
+
 }

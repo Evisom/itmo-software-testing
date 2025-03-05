@@ -1,11 +1,8 @@
 package tpo.lab1;
 
-import tpo.lab1.model.Person;
-import tpo.lab1.model.Room;
+import tpo.lab1.model.*;
 import tpo.lab1.model.enums.Emotion;
-import tpo.lab1.model.Event;
 import tpo.lab1.model.enums.EventType;
-import tpo.lab1.model.University;
 
 public class Main {
     public static void main(String[] args) {
@@ -17,7 +14,7 @@ public class Main {
         intruder1.enterRoom(room);
         intruder2.enterRoom(room);
 
-        Event invasion = new Event(EventType.INVASION, room, "Breaking into the room");
+        Event invasion = new Event(EventType.INVASION, room, "Breaking into the room", new BlockAttempt());
         invasion.addParticipant(intruder1);
         invasion.addParticipant(intruder2);
 
