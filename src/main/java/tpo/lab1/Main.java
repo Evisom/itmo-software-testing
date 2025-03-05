@@ -7,8 +7,8 @@ import tpo.lab1.model.enums.EventType;
 public class Main {
     public static void main(String[] args) {
         University university = new University("Kruxwan University", "Blue Belt");
-        Person intruder1 = new Person("Intruder 1", "Scholar", Emotion.ANGRY, university);
-        Person intruder2 = new Person("Intruder 2", "Scholar", Emotion.ANGRY, university);
+        Person intruder1 = new Person("Intruder 1", "Scholar",100, Emotion.ANGRY, university);
+        Person intruder2 = new Person("Intruder 2", "Scholar", 100,Emotion.ANGRY, university);
         Room room = new Room();
 
         intruder1.enterRoom(room);

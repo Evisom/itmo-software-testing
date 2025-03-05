@@ -37,4 +37,13 @@ public class Event {
     public EventType getType() {
         return this.type;
     }
+
+    public BlockResult isSuccess(){
+        if (participants.stream().mapToInt(Person::getForse).sum() > blockAttempt.getBlock()){
+            return  BlockResult.SUCCESSFUL;
+
+        }else{
+            return  BlockResult.TSCHETNO;
+        }
+    }
 }

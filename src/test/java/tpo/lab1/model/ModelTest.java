@@ -28,7 +28,7 @@ class ModelTest {
     void setUp() {
         university = new University("Круксванский Университет", "Синий символ");
         room = new Room();
-        person = new Person("Альтаир", "Маг", Emotion.ANGRY, university);
+        person = new Person("Альтаир", "Маг", 100,Emotion.ANGRY, university);
         door = new Door(false, LockStatus.LOCKED);
         event = new Event(EventType.INVASION, room, "Маги ворвались в зал", new BlockAttempt());
     }
@@ -54,7 +54,7 @@ class ModelTest {
     @CsvSource({"ANGRY", "CALM", "EXCITED", "SCARED"})
     @DisplayName("Проверка установки эмоций")
     void testPersonEmotions(Emotion emotion) {
-        Person testPerson = new Person("Магистр", "Преподаватель", emotion, university);
+        Person testPerson = new Person("Магистр", "Преподаватель",100, emotion, university);
         assertEquals(emotion, testPerson.getEmotion());
     }
     @Test
@@ -98,8 +98,8 @@ class ModelTest {
     @Test
     @DisplayName("Проверка увеличения шума в комнате")
     void testRoomNoiseLevel() {
-        Person p1 = new Person("Маг1", "Студент", Emotion.EXCITED, university);
-        Person p2 = new Person("Маг2", "Преподаватель", Emotion.CALM, university);
+        Person p1 = new Person("Маг1", "Студент",100, Emotion.EXCITED, university);
+        Person p2 = new Person("Маг2", "Преподаватель", 100,Emotion.CALM, university);
 
         room.addPerson(p1);
         assertEquals(10, room.getNoiseLevel());
@@ -128,53 +128,42 @@ class ModelTest {
     @Test
     public void testBlockAttemptFailed() {
         University university = new University("Kruxwan University", "Blue Belt");
-        Person intruder1 = new Person("Intruder 1", "Scholar", Emotion.ANGRY, university);
-        Person intruder2 = new Person("Intruder 2", "Scholar", Emotion.ANGRY, university);
-        Person butler = new Person("Butler", "Servant", Emotion.SCARED, null);
+        Person intruder1 = new Person("Intruder 1", "Scholar", 100,Emotion.ANGRY, university);
+        Person intruder2 = new Person("Intruder 2", "Scholar", 100,Emotion.ANGRY, university);
+        Person butler = new Person("Butler", "Servant", 100,Emotion.SCARED, null);
 
         BlockAttempt blockAttempt = new BlockAttempt(
                 List.of(butler),
                 Arrays.asList(intruder1, intruder2),
-                BlockResult.TSCHETNO
+                1000
         );
 
-        assertEquals(BlockResult.TSCHETNO, blockAttempt.getResult());
+        Event event1 = new Event(EventType.INVASION,new Room(),"invasion",blockAttempt);
+        event1.addParticipant(intruder1);
+        event1.addParticipant(intruder2);
+        assertEquals(BlockResult.TSCHETNO, event1.isSuccess());
     }
 
     @Test
     public void testBlockAttemptSuccessful() {
         University university = new University("Kruxwan University", "Blue Belt");
-        Person intruder = new Person("Intruder", "Scholar", Emotion.ANGRY, university);
-        Person guard = new Person("Guard", "Security", Emotion.CALM, null);
+        Person intruder1 = new Person("Intruder 1", "Scholar", 100,Emotion.ANGRY, university);
+        Person intruder2 = new Person("Intruder 2", "Scholar", 100,Emotion.ANGRY, university);
+        Person butler = new Person("Butler", "Servant", 100,Emotion.SCARED, null);
 
         BlockAttempt blockAttempt = new BlockAttempt(
-                List.of(guard),
-                List.of(intruder),
-                BlockResult.SUCCESSFUL
+                List.of(butler),
+                Arrays.asList(intruder1, intruder2),
+                10
         );
 
-        assertEquals(BlockResult.SUCCESSFUL, blockAttempt.getResult());
+        Event event1 = new Event(EventType.INVASION,new Room(),"invasion",blockAttempt);
+        event1.addParticipant(intruder1);
+        event1.addParticipant(intruder2);
+        assertEquals(BlockResult.SUCCESSFUL, event1.isSuccess());
     }
 
-    @Test
-    public void testEventWithBlockAttempt() {
-        University university = new University("Kruxwan University", "Blue Belt");
-        Person intruder = new Person("Intruder", "Scholar", Emotion.ANGRY, university);
-        Person guard = new Person("Guard", "Security", Emotion.CALM, null);
-        Room room = new Room();
 
-        BlockAttempt blockAttempt = new BlockAttempt(
-                List.of(guard),
-                List.of(intruder),
-                BlockResult.SUCCESSFUL
-        );
-
-        Event event = new Event(EventType.INVASION, room, "Attempted break-in", blockAttempt);
-        event.addParticipant(intruder);
-        event.addParticipant(guard);
-
-        assertEquals(BlockResult.SUCCESSFUL, event.getBlockResult());
-    }
 
 
 

@@ -8,13 +8,15 @@ import java.util.List;
 public class Person {
     private String name;
     private String role;
+    private Integer forse;
     private Emotion emotion;
     private List<Clothing> clothing;
     private Organization affiliation;
 
-    public Person(String name, String role, Emotion emotion, Organization affiliation) {
+    public Person(String name, String role,Integer forse,  Emotion emotion, Organization affiliation) {
         this.name = name;
         this.role = role;
+        this.forse = forse;
         this.emotion = emotion;
         this.affiliation = affiliation;
         this.clothing = new ArrayList<>();
@@ -38,5 +40,9 @@ public class Person {
 
     public String getName() {
         return name;
+    }
+
+    public  Integer getForse(){
+        return forse;
     }
 }
