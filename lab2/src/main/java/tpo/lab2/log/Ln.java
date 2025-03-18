@@ -1,21 +1,32 @@
 package tpo.lab2.log;
-
 public class Ln {
+
     public static double compute(double x, double eps) {
         if (x <= 0) {
             throw new IllegalArgumentException("ln(x) не определён для x <= 0");
         }
 
-        double y = x - 1;
+
+        if (x < 1) {
+            return -compute(1.0 / x, eps);
+        }
+        double sumShift = 0.0;
+
+        while (x > 2) {
+            x /= 2.0;sumShift += compute(2.0, eps);
+        }
+        double y = x - 1.0;
         double term = y;
-        double sum = y;
-        int n = 1;
+        double sum = 0.0;
+        int k = 1;
+
 
         while (Math.abs(term) >= eps) {
-            term = - term * y / n;
             sum += term;
-            n++;
+            k++;
+            term = - term * y * (k - 1) / k;
         }
-        return sum;
+
+        return sum + sumShift;
     }
 }

@@ -6,7 +6,7 @@ public class Log2 {
             throw new IllegalArgumentException("log2(x) не определён для x <= 0");
         }
         double lnX = Ln.compute(x, eps);
-        double ln2 = Log2.compute(2, eps);
+        double ln2 = Ln.compute(2.0, eps);
         return lnX / ln2;
     }
 }
