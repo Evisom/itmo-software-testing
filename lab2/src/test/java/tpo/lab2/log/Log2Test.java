@@ -4,17 +4,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class Log2Test {
 
-    private static final double EPSILON = 0.01;
+    private static final double EPSILON = 0.00001;
+    private static final double DELTA = 0.001;
 
     @Mock
     private Ln lnMock;
@@ -49,7 +53,7 @@ public class Log2Test {
         when(lnMock.compute(2.0, EPSILON)).thenReturn(ln2);
 
         double result = log2.compute(input, EPSILON);
-        assertEquals(lnX / ln2, result, EPSILON);
+        assertEquals(lnX / ln2, result, DELTA);
     }
 
     @ParameterizedTest
@@ -69,16 +73,43 @@ public class Log2Test {
         when(lnMock.compute(2.0, EPSILON)).thenReturn(ln2);
 
         double result = log2.compute(input, EPSILON);
-        assertEquals(expected, result, EPSILON);
+        assertEquals(expected, result, DELTA);
     }
 
     @Test
     @DisplayName("Тест на корректную работу с числами большого размера")
     void checkLog2ForLargeNumber() {
+
+        when(lnMock.compute(1000000, EPSILON)).thenReturn(Math.log(1000000));
+        when(lnMock.compute(2.0, EPSILON)).thenReturn(Math.log(2));
+
+
         double result = log2.compute(1000000, EPSILON);
-        assertEquals(Math.log(1000000) / Math.log(2), result, EPSILON);
+        assertEquals(Math.log(1000000) / Math.log(2), result, DELTA);
     }
 
+    @Test
+    @DisplayName("Тест на корректную работу с малым числом")
+    void checkLog2ForSmallNumber() {
+
+        when(lnMock.compute(0.5, EPSILON)).thenReturn(Math.log(0.5));
+        when(lnMock.compute(2.0, EPSILON)).thenReturn(Math.log(2));
+
+
+        double result = log2.compute(0.5, EPSILON);
+        assertEquals(Math.log(0.5) / Math.log(2), result, DELTA);
+    }
+
+    @Test
+    @DisplayName("Тест на корректную работу с числом 1")
+    void checkLog2ForOne() {
+        when(lnMock.compute(1.0, EPSILON)).thenReturn(Math.log(1));
+        when(lnMock.compute(2.0, EPSILON)).thenReturn(Math.log(2));
+
+
+        double result = log2.compute(1.0, EPSILON);
+        assertEquals(0.0, result, DELTA);
+    }
 
 
 

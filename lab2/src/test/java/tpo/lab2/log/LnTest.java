@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class LnTest {
 
-    private static final double EPSILON = 0.01;
-
+    private static final double EPSILON = 0.00001;
+    private static final double DELTA = 0.001;
     private Ln ln;
 
     @BeforeAll
@@ -38,21 +38,21 @@ public class LnTest {
     @ValueSource(doubles = {0.5, 1.0, 1.5, 2.0, 2.71828, 3.0, 10.0})
     void checkForMathLn(double input) {
         double result = ln.compute(input, EPSILON);
-        assertEquals(Math.log(input), result, EPSILON);
+        assertEquals(Math.log(input), result, DELTA);
     }
 
     @ParameterizedTest
     @DisplayName("Тест на табличные значения с Math.log(x)")
     @CsvSource({
             "1, 0.0",
-            "Math.E, 1.0",
+            "2.718, 1.0",
             "2, 0.69314718056",
             "3, 1.09861228844",
             "10, 2.30258509299"
     })
     void checkTableValues(double input, double expected) {
         double result = ln.compute(input, EPSILON);
-        assertEquals(expected, result, EPSILON);
+        assertEquals(expected, result, DELTA);
     }
 
     @Test
@@ -66,6 +66,6 @@ public class LnTest {
     @DisplayName("Тест на корректную работу с числами большого размера")
     void checkLnForLargeNumber() {
         double result = ln.compute(1000000, EPSILON);
-        assertEquals(Math.log(1000000), result, EPSILON);
+        assertEquals(Math.log(1000000), result, DELTA);
     }
 }

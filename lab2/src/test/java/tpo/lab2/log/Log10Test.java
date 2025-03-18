@@ -4,17 +4,21 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@ExtendWith(MockitoExtension.class)
 public class Log10Test {
 
-    private static final double EPSILON = 0.01;
+    private static final double EPSILON = 0.00001;
+    private static final double DELTA = 0.001;
 
     @Mock
     private Ln lnMock;
@@ -75,10 +79,17 @@ public class Log10Test {
     @Test
     @DisplayName("Тест на корректную работу с числами большого размера")
     void checkLog10ForLargeNumber() {
-        double result = log10.compute(1000000, EPSILON);
-        assertEquals(Math.log(1000000) / Math.log(10), result, EPSILON);
-    }
+        // Настройка поведения мок-объекта lnMock
+        when(lnMock.compute(1000000, EPSILON)).thenReturn(Math.log(1000000));  // Мокируем для 1000000
+        when(lnMock.compute(10.0, EPSILON)).thenReturn(Math.log(10));  // Мокируем для 10.0
 
+        // Выполнение теста
+        double result = log10.compute(1000000, EPSILON);
+
+        // Сравнение результатов
+        double expected = Math.log(1000000) / Math.log(10);
+        assertEquals(expected, result, DELTA);  // Проверка результата с погрешностью DELTA
+    }
 
     @Test
     void testLog10PositiveValue() {
