@@ -8,10 +8,15 @@ import java.io.IOException;
 public class CsvWriter {
     public static void writeToCsv(Calc function, double start, double end, double step, double eps, String filename) {
         try (FileWriter writer = new FileWriter(filename)) {
-            writer.append("x,y\n");
+            writer.append("x;y\n");
             for (double x = start; x <= end; x += step) {
-                double y = function.compute(x, eps);
-                writer.append(String.format("%.5f,%.5f\n", x, y));
+                try {
+                    double y = function.compute(x, eps);
+                    writer.append(String.format("%.5f;%.5f\n", x, y));
+                } catch (ArithmeticException | IllegalArgumentException ignored) {
+
+                }
+
             }
             System.out.println("CSV file created: " + filename);
         } catch (IOException e) {
