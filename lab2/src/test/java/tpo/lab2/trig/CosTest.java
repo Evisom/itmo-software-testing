@@ -3,11 +3,11 @@ package tpo.lab2.trig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.openMocks;
 
 class CosTest {
 
@@ -16,7 +16,7 @@ class CosTest {
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks(this);
     }
 
     @Test

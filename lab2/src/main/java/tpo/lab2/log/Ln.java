@@ -4,7 +4,7 @@ import tpo.lab2.trig.Fun;
 
 public class Ln extends Fun {
     @Override
-    public  double compute(double x, double eps) {
+    public double compute(double x, double eps) {
         if (x <= 0) {
             throw new IllegalArgumentException("ln(x) не определён для x <= 0");
         }
@@ -16,7 +16,8 @@ public class Ln extends Fun {
         double sumShift = 0.0;
 
         while (x > 2) {
-            x /= 2.0;sumShift += compute(2.0, eps);
+            x /= 2.0;
+            sumShift += compute(2.0, eps);
         }
         double y = x - 1.0;
         double term = y;
@@ -27,7 +28,7 @@ public class Ln extends Fun {
         while (Math.abs(term) >= eps) {
             sum += term;
             k++;
-            term = - term * y * (k - 1) / k;
+            term = -term * y * (k - 1) / k;
         }
 
         return sum + sumShift;

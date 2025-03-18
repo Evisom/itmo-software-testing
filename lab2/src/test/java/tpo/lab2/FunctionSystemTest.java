@@ -1,4 +1,4 @@
-package tpo.lab2.trig;
+package tpo.lab2;
 
 public class FunctionSystemTest {
 }
