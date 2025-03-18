@@ -1,7 +1,6 @@
-package tpo.lab2;
+package tpo.lab2.trig;
 
 import org.junit.jupiter.api.Test;
-import tpo.lab2.trig.Sin;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
