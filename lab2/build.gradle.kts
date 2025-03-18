@@ -26,12 +26,12 @@ tasks.test {
         events("passed", "skipped", "failed")
         showStandardStreams = true
     }
-    reports.html.required.set(true)
-    finalizedBy("copyTestReport")
+//    reports.html.required.set(true)
+//    finalizedBy("copyTestReport")
 }
 
-tasks.register<Copy>("copyTestReport") {
-    dependsOn("test")
-    from("$buildDir/reports/tests/test")
-    into("docs")
-}
+//tasks.register<Copy>("copyTestReport") {
+//    dependsOn("test")
+//    from("$buildDir/reports/tests/test")
+//    into("docs")
+//}
