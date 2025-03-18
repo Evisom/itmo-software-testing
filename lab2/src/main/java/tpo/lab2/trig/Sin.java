@@ -1,7 +1,8 @@
 package tpo.lab2.trig;
 
-public class Sin {
-    public static double compute(double x, double eps) {
+public class Sin extends Fun {
+    @Override
+    public  double compute(double x, double eps) {
         double term = x;
         double sum = x;
         int n = 1;

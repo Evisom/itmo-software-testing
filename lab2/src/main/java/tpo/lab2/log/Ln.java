@@ -1,7 +1,10 @@
 package tpo.lab2.log;
-public class Ln {
 
-    public static double compute(double x, double eps) {
+import tpo.lab2.trig.Fun;
+
+public class Ln extends Fun {
+    @Override
+    public  double compute(double x, double eps) {
         if (x <= 0) {
             throw new IllegalArgumentException("ln(x) не определён для x <= 0");
         }
