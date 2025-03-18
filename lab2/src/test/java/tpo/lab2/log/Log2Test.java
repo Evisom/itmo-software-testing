@@ -9,8 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class Log2Test {
@@ -78,5 +77,54 @@ public class Log2Test {
     void checkLog2ForLargeNumber() {
         double result = log2.compute(1000000, EPSILON);
         assertEquals(Math.log(1000000) / Math.log(2), result, EPSILON);
+    }
+
+
+
+
+
+    @Test
+    void testLog2PositiveValue() {
+        Ln ln = new Ln();
+        Log2 log2 = new Log2(ln);
+
+        double result = log2.compute(8, 1e-6);
+        assertEquals(3.0, result, 1e-6, "log2(8) должно быть 3");
+    }
+
+    @Test
+    void testLog2SmallValue() {
+        Ln ln = new Ln();
+        Log2 log2 = new Log2(ln);
+
+        double result = log2.compute(0.5, 1e-6);
+        assertEquals(-1.0, result, 1e-6, "log2(0.5) должно быть -1");
+    }
+
+    @Test
+    void testLog2ThrowsExceptionForNonPositiveArgument() {
+        Ln ln = new Ln();
+        Log2 log2 = new Log2(ln);
+
+        assertThrows(IllegalArgumentException.class, () -> log2.compute(0, 1e-6), "log2(0) должен выбросить исключение");
+        assertThrows(IllegalArgumentException.class, () -> log2.compute(-1, 1e-6), "log2(-1) должен выбросить исключение");
+    }
+
+    @Test
+    void testLog2WithVerySmallValue() {
+        Ln ln = new Ln();
+        Log2 log2 = new Log2(ln);
+
+        double result = log2.compute(1e-6, 1e-6);
+        assertTrue(result < 0, "log2(1e-6) должно быть отрицательным");
+    }
+
+    @Test
+    void testLog2WithLargeValue() {
+        Ln ln = new Ln();
+        Log2 log2 = new Log2(ln);
+
+        double result = log2.compute(1000, 1e-6);
+        assertTrue(result > 0, "log2(1000) должно быть положительным");
     }
 }

@@ -9,8 +9,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 public class Log10Test {
@@ -35,7 +34,6 @@ public class Log10Test {
     @Test
     @DisplayName("Тест на исключение при x <= 0")
     void checkLog10ExceptionForNonPositiveX() {
-        // Проверка, что возникает исключение при x <= 0
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> log10.compute(0, EPSILON));
         assertEquals("log10(x) не определён для x <= 0", exception.getMessage());
     }
@@ -47,11 +45,9 @@ public class Log10Test {
         double lnX = Math.log(input);
         double ln10 = Math.log(10);
 
-        // Настройка моков
         when(lnMock.compute(input, EPSILON)).thenReturn(lnX);
         when(lnMock.compute(10.0, EPSILON)).thenReturn(ln10);
 
-        // Проверка результата
         double result = log10.compute(input, EPSILON);
         assertEquals(lnX / ln10, result, EPSILON);
     }
@@ -81,5 +77,51 @@ public class Log10Test {
     void checkLog10ForLargeNumber() {
         double result = log10.compute(1000000, EPSILON);
         assertEquals(Math.log(1000000) / Math.log(10), result, EPSILON);
+    }
+
+
+    @Test
+    void testLog10PositiveValue() {
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+
+        double result = log10.compute(1000, 1e-6);
+        assertEquals(3.0, result, 1e-6, "log10(1000) должно быть 3");
+    }
+
+    @Test
+    void testLog10SmallValue() {
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+
+        double result = log10.compute(0.1, 1e-6);
+        assertEquals(-1.0, result, 1e-6, "log10(0.1) должно быть -1");
+    }
+
+    @Test
+    void testLog10ThrowsExceptionForNonPositiveArgument() {
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+
+        assertThrows(IllegalArgumentException.class, () -> log10.compute(0, 1e-6), "log10(0) должен выбросить исключение");
+        assertThrows(IllegalArgumentException.class, () -> log10.compute(-1, 1e-6), "log10(-1) должен выбросить исключение");
+    }
+
+    @Test
+    void testLog10WithVerySmallValue() {
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+
+        double result = log10.compute(1e-6, 1e-6);
+        assertTrue(result < 0, "log10(1e-6) должно быть отрицательным");
+    }
+
+    @Test
+    void testLog10WithLargeValue() {
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+
+        double result = log10.compute(100000, 1e-6);
+        assertTrue(result > 0, "log10(100000) должно быть положительным");
     }
 }
