@@ -38,4 +38,40 @@ public class CustomMath {
         }
         return cosX / sinX;
     }
+
+    public static double ln(double x, double eps) {
+        if (x <= 0) {
+            throw new IllegalArgumentException("ln(x) не определён для x <= 0");
+        }
+
+        double y = x - 1;
+        double term = y;
+        double sum = y;
+        int n = 1;
+
+        while (Math.abs(term) >= eps) {
+            term = - term * y / n;
+            sum += term;
+            n++;
+        }
+        return sum;
+    }
+
+    public static double log10(double x, double eps) {
+        if (x <= 0) {
+            throw new IllegalArgumentException("log10(x) не определён для x <= 0");
+        }
+        double lnX = ln(x, eps);
+        double ln10 = ln(10, eps);
+        return lnX / ln10;
+    }
+
+    public static double log2(double x, double eps) {
+        if (x <= 0) {
+            throw new IllegalArgumentException("log2(x) не определён для x <= 0");
+        }
+        double lnX = ln(x, eps);
+        double ln2 = ln(2, eps);
+        return lnX / ln2;
+    }
 }
