@@ -82,11 +82,10 @@ public class CotTest {
         double sinX = Math.sin(input);
         double cosX = Math.cos(input);
 
-        // Настройка моков
         when(sinMock.compute(input, EPSILON)).thenReturn(sinX);
         when(cosMock.compute(input, EPSILON)).thenReturn(cosX);
 
-        // Проверка результата
+
         if (Math.abs(sinX - 0.0) > EPSILON) {
             double result = cotMock.compute(input, EPSILON);
             assertEquals(expected, result, DELTA);

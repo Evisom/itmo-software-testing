@@ -79,16 +79,16 @@ public class Log10Test {
     @Test
     @DisplayName("Тест на корректную работу с числами большого размера")
     void checkLog10ForLargeNumber() {
-        // Настройка поведения мок-объекта lnMock
-        when(lnMock.compute(1000000, EPSILON)).thenReturn(Math.log(1000000));  // Мокируем для 1000000
-        when(lnMock.compute(10.0, EPSILON)).thenReturn(Math.log(10));  // Мокируем для 10.0
 
-        // Выполнение теста
+        when(lnMock.compute(1000000, EPSILON)).thenReturn(Math.log(1000000));
+        when(lnMock.compute(10.0, EPSILON)).thenReturn(Math.log(10));
+
+
         double result = log10.compute(1000000, EPSILON);
 
-        // Сравнение результатов
+
         double expected = Math.log(1000000) / Math.log(10);
-        assertEquals(expected, result, DELTA);  // Проверка результата с погрешностью DELTA
+        assertEquals(expected, result, DELTA);
     }
 
     @Test
