@@ -1,15 +1,13 @@
 package tpo.lab2;
 
+import tpo.lab2.log.Ln;
 import tpo.lab2.log.Log10;
 import tpo.lab2.log.Log2;
-import tpo.lab2.trig.Cot;
-import tpo.lab2.trig.Sin;
-import tpo.lab2.trig.Tan;
+import tpo.lab2.trig.*;
 
 import java.util.Scanner;
 
 public class Main {
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -29,39 +27,36 @@ public class Main {
         }
     }
 
-
     public static double compute(double x, double eps) {
-        if (x <= 0) {
+        Sin sin = new Sin();
+        Cos cos = new Cos(sin);
+        Tan tan = new Tan(sin, cos);
+        Cot cot = new Cot(sin, cos);
 
-            double tanX = Tan.compute(x, eps);
-            double sinX = Sin.compute(x, eps);
-            double cotX = Cot.compute(x, eps);
+        Ln ln = new Ln();
+        Log10 log10 = new Log10(ln);
+        Log2 log2 = new Log2(ln);
+        if (x <= 0) {
+            double tanX = tan.compute(x, eps);
+            double sinX = sin.compute(x, eps);
+            double cotX = cot.compute(x, eps);
 
             double part = (tanX - sinX) * sinX;
-
             part = part - (cotX * cotX);
 
             double squared = Math.pow(part, 2);
-            double result = Math.pow(squared, 3);
-
-            return result;
+            return Math.pow(squared, 3);
 
         } else {
-            double log10x = Log10.compute(x, eps);
-            double log2x  = Log2.compute(x, eps);
+            double log10x = log10.compute(x, eps);
+            double log2x = log2.compute(x, eps);
 
             double part = log10x * log10x;
-
             double partSquared = Math.pow(part, 2);
-
             double sub1 = partSquared - log10x;
-
-
             double sub2 = sub1 - log2x;
 
-            double result = sub2 + log10x;
-
-            return result;
+            return sub2 + log10x;
         }
     }
 }
