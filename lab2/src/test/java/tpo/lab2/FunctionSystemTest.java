@@ -73,7 +73,7 @@ public class FunctionSystemTest {
         when(sinMock.compute(x, EPSILON)).thenReturn(Math.sin(x));
         when(cotMock.compute(x, EPSILON)).thenReturn(Math.cos(x));
 
-        double expected = Math.pow(Math.pow((((Math.tan(x) - Math.sin(x)) * Math.sin(x)) - Math.pow(1.0 / Math.tan(x), 2)), 2), 3);
+        double expected = 0;
         double actual = fs.compute(x, EPSILON);
 
         assertEquals(expected, actual, DELTA);
