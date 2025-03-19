@@ -14,7 +14,7 @@ import tpo.lab2.trig.Cot;
 import tpo.lab2.trig.Sin;
 import tpo.lab2.trig.Tan;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,14 +99,23 @@ public class FunctionSystemTest {
     }
 
     @ParameterizedTest
-    @ValueSource(doubles ={-Math.PI / 2, -Math.PI, -3 * Math.PI / 2, -2 * Math.PI})
-    void testComputeAtExcludedPoints(double x) {
+    @ValueSource(doubles = {-Math.PI / 2, -3 * Math.PI / 2, })
+    void testComputeAtTanExcludedPoints(double x) {
+        when(tanMock.compute(x, EPSILON)).thenThrow(new ArithmeticException("tan(x) не определён при cos(x) = 0"));
 
-            when(tanMock.compute(x, EPSILON)).thenReturn(Double.NaN);
-            when(sinMock.compute(x, EPSILON)).thenReturn(Double.NaN);
-            when(cotMock.compute(x, EPSILON)).thenReturn(Double.NaN);
-            assertEquals(Double.NaN, fs.compute(x, EPSILON));
+        ArithmeticException exception = assertThrows(ArithmeticException.class, () -> fs.compute(x, EPSILON));
 
+        assertEquals("tan(x) не определён при cos(x) = 0", exception.getMessage());
+    }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {0, -Math.PI, -2 * Math.PI})
+    void testComputeAtCotExcludedPoints(double x) {
+        when(cotMock.compute(x, EPSILON)).thenThrow(new ArithmeticException("cot(x) не определён при sin(x) = 0"));
+
+        ArithmeticException exception = assertThrows(ArithmeticException.class, () -> fs.compute(x, EPSILON));
+
+        assertEquals("cot(x) не определён при sin(x) = 0", exception.getMessage());
     }
 
     @Test
