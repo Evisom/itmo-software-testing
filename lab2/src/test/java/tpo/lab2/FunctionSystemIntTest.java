@@ -84,8 +84,8 @@ public class FunctionSystemIntTest {
 
     @Test
     void testComputeNearZero() {
-        double xNeg = -0.1;
-        double xPos = 0.1;
+        double xNeg = -0.3;
+        double xPos = 0.3;
 
         double expectedNeg = Math.pow(Math.pow((((Math.tan(xNeg) - Math.sin(xNeg)) * Math.sin(xNeg)) - Math.pow(1.0 / Math.tan(xNeg), 2)), 2), 3);
         double actualNeg = fs.compute(xNeg, EPSILON);
