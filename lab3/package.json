@@ -1,0 +1,22 @@
+{
+  "name": "lab3",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "auth": "npx ts-node auth/auth-debug-mode.ts",
+    "test": "npx playwright test",
+    "browser": "/Applications/Google\\ Chrome.app/Contents/MacOS/Google\\ Chrome --remote-debugging-port=9222 --user-data-dir=/tmp/chrome-dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.14"
+  },
+  "dependencies": {
+    "playwright-extra": "^4.3.6",
+    "playwright-extra-plugin-stealth": "^0.0.1"
+  }
+}
