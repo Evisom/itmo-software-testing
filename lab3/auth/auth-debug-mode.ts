@@ -2,7 +2,7 @@ import { chromium } from "playwright";
 
 (async () => {
   const browser = await chromium.connectOverCDP("http://localhost:9222");
-  const context = browser.contexts()[0]; // подключаемся к открытому Chrome окну
+  const context = browser.contexts()[0];
   const page = await context.newPage();
 
   await page.goto("https://accounts.google.com/");
