@@ -454,4 +454,31 @@ test.describe("Операции с proxy", () => {
       page.locator("//*[local-name() = 'copyright']").nth(0)
     ).toHaveText(TEST_DATA.IT_COPYRIGHT);
   });
+  test("Можно удалить", async ({ page }) => {
+    await page.goto("/");
+    await page
+      .locator(
+        `xpath=//div[contains(@class, 'proxy-list-item')]//*[contains(text(), "${TEST_DATA.FEED_NEW_TITLE}")]/following::button[contains(@aria-label, 'More Options')]`
+      )
+      .nth(0)
+      .click(); // Кликаем на троеточие
+
+    await page
+      .locator("xpath=/html/body/div[2]/div[2]/div/div/div/div/button[4]")
+      .click(); // Кликаем на delete
+
+    await page
+      .locator(
+        "xpath=/html/body/div[2]/div[2]/div/mat-dialog-container/app-confirm-dialog/mat-dialog-actions/button[2]"
+      )
+      .click();
+
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    await expect(
+      page.locator(
+        `xpath=//div[contains(@class, 'proxy-list-item')]//*[contains(text(), "${TEST_DATA.FEED_NEW_TITLE}")]`
+      )
+    ).toHaveCount(0);
+  });
 });
