@@ -95,4 +95,39 @@ test.describe("Операции с proxy", () => {
       page.getByText("Feed content will be refreshed in the background")
     ).toBeVisible(); // Появилось уведомление
   });
+
+  test("Можно деактивировать", async ({ page }) => {
+    await page.goto("/");
+    await page
+      .locator(
+        `xpath=//div[contains(@class, 'proxy-list-item')]//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/following::button[contains(@aria-label, 'More Options')]`
+      )
+      .nth(0)
+      .click(); // Кликаем на троеточие
+
+    await page
+      .locator("xpath=/html/body/div[2]/div[2]/div/div/div/div/button[3]")
+      .click(); // Кликаем на deactivate
+
+    await page
+      .locator(
+        "xpath=/html/body/div[2]/div[2]/div/mat-dialog-container/app-confirm-dialog/mat-dialog-actions/button[2]"
+      )
+      .click(); // Кликаем на Confirm
+
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    await expect(page.getByText("Proxy deactivated")).toBeVisible(); // Появилось уведомление
+
+    await page.goto(
+      (await page
+        .locator(
+          `xpath=/html/body/app-root/div/div[2]/div/app-home/div/div//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/preceding-sibling::a`
+        )
+        .getAttribute("href")) as string
+    ); // Переходим на наш RSS Proxy
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    await expect(page).toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь редиректит
+  });
 });
