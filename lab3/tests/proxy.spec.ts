@@ -2,13 +2,32 @@ import { test, expect } from "@playwright/test";
 test.describe("Операции с proxy", () => {
   const TEST_DATA = {
     FEED_URL: "https://vc.ru/rss",
+    RESOURCE_LINK: "https://vc.ru/",
+    CUSTOM_FIELD_TITLE: "customTitle123",
+    CUSTOM_FIELD_DESC: "customDescription123",
+    IT_CATEGORY: "Business",
+    IT_SUBCATEGORY: "Investing",
+    IT_IMAGE: "https://example.com/image.png",
+    IT_SUBTITLE: "itunes_subtitle",
+    IT_SUMMARY: "itunes_summary",
+    IT_KEYWORDS: "itunes_keywords",
+    IT_EMAIL: "itunes_email",
+    IT_AUTHOR: "itunes_author",
+    IT_COPYRIGHT: "itunes_copywright",
     FEED_TITLE: "",
-    FEED_LINK: "https://vc.ru/",
+    FEED_NEW_TITLE: "",
+    FEED_CUSTOM_FIELD_URL: "",
   };
   test.beforeAll(async () => {
     TEST_DATA.FEED_TITLE = `vcru-rss-${Math.random()
       .toString(36)
       .substring(2, 10)}`;
+    TEST_DATA.FEED_NEW_TITLE = `vcru-rss-${Math.random()
+      .toString(36)
+      .substring(2, 10)}`;
+    TEST_DATA.FEED_CUSTOM_FIELD_URL = `vcru-rss-${Math.random()
+      .toString(36)
+      .substring(2, 22)}`;
   });
   test("Можно создать Proxy", async ({ page }) => {
     await page.goto("/");
@@ -73,7 +92,7 @@ test.describe("Операции с proxy", () => {
       page.locator(
         "#folder1 > div.opened > div:nth-child(6) > span:nth-child(2)"
       )
-    ).toHaveText(TEST_DATA.FEED_LINK); // Проверяем что это реально наш url
+    ).toHaveText(TEST_DATA.RESOURCE_LINK); // Проверяем что это реально наш url
   });
 
   test("Можно обновить ленту", async ({ page }) => {
@@ -170,5 +189,27 @@ test.describe("Операции с proxy", () => {
     await page.waitForLoadState("networkidle"); // Ждем загрузку
 
     await expect(page).not.toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь НЕ редиректит
+  });
+
+  test("Можно экспортировать email подписчиков", async ({ page }) => {
+    await page.goto("/");
+    await page
+      .locator(
+        `xpath=//div[contains(@class, 'proxy-list-item')]//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/following::button[contains(@aria-label, 'More Options')]`
+      )
+      .nth(0)
+      .click(); // Кликаем на троеточие
+
+    await page
+      .locator("xpath=/html/body/div[2]/div[2]/div/div/div/div/button[2]")
+      .click(); // Кликаем на export email ....
+
+    const downloadPromise = page.waitForEvent("download");
+
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    const download = await downloadPromise;
+
+    expect(download).toBeTruthy();
   });
 });
