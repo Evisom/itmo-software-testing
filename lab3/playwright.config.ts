@@ -10,14 +10,15 @@ export default defineConfig({
         headless: false,
       },
     },
-    {
-      name: "firefox",
-      use: {
-        browserName: "firefox",
-        storageState: "auth/auth.json",
-        headless: false,
-      },
-    },
+    // {
+    //   // Пока без firefox, потом включим
+    //   name: "firefox",
+    //   use: {
+    //     browserName: "firefox",
+    //     storageState: "auth/auth.json",
+    //     headless: false,
+    //   },
+    // },
   ],
   use: {
     baseURL: "https://feedburner.google.com/",
