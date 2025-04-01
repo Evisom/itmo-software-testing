@@ -119,6 +119,12 @@ test.describe("Операции с proxy", () => {
 
     await expect(page.getByText("Proxy deactivated")).toBeVisible(); // Появилось уведомление
 
+    await expect(
+      page.locator(
+        `//div[contains(@class, 'proxy-list-item') and contains(@class, 'deactivated')]//div[contains(@class, 'proxy-title') and contains(text(), "${TEST_DATA.FEED_TITLE}")]//following-sibling::div[contains(@class, 'redirect-message') and contains(text(), 'This feed is redirecting to your source feed')]`
+      )
+    ).toBeVisible(); // Будет виден текст This feed is redirecting to your source feed в блоке
+
     await page.goto(
       (await page
         .locator(
@@ -129,5 +135,40 @@ test.describe("Операции с proxy", () => {
     await page.waitForLoadState("networkidle"); // Ждем загрузку
 
     await expect(page).toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь редиректит
+  });
+
+  test("Можно активировать деактивированную ленту", async ({ page }) => {
+    await page.goto("/");
+    await page
+      .locator(
+        `xpath=//div[contains(@class, 'proxy-list-item')]//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/following::button[contains(@aria-label, 'More Options')]`
+      )
+      .nth(0)
+      .click(); // Кликаем на троеточие
+
+    await page
+      .locator("xpath=/html/body/div[2]/div[2]/div/div/div/div/button[3]")
+      .click(); // Кликаем на activate
+
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    await expect(page.getByText("Proxy activated")).toBeVisible(); // Появилось уведомление
+
+    await expect(
+      page.locator(
+        `//div[contains(@class, 'proxy-list-item') and contains(@class, 'deactivated')]//div[contains(@class, 'proxy-title') and contains(text(), "${TEST_DATA.FEED_TITLE}")]//following-sibling::div[contains(@class, 'redirect-message') and contains(text(), 'This feed is redirecting to your source feed')]`
+      )
+    ).toHaveCount(0); // Будет виден текст This feed is redirecting to your source feed в блоке
+
+    await page.goto(
+      (await page
+        .locator(
+          `xpath=/html/body/app-root/div/div[2]/div/app-home/div/div//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/preceding-sibling::a`
+        )
+        .getAttribute("href")) as string
+    ); // Переходим на наш RSS Proxy
+    await page.waitForLoadState("networkidle"); // Ждем загрузку
+
+    await expect(page).not.toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь НЕ редиректит
   });
 });
