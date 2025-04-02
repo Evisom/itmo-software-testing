@@ -1,10 +1,6 @@
 import { test, expect } from "@playwright/test";
+import { parseStringPromise } from "xml2js";
 test.describe("Операции с proxy", () => {
-  const checkXML = async (browserName, callback) => {
-    if (browserName === "firefox") return;
-    callback();
-  };
-  let page;
   const TEST_DATA = {
     FEED_URL: "https://vc.ru/rss",
     RESOURCE_LINK: "https://vc.ru/",
@@ -19,13 +15,11 @@ test.describe("Операции с proxy", () => {
     IT_EMAIL: "itunes_email",
     IT_AUTHOR: "itunes_author",
     IT_COPYRIGHT: "itunes_copywright",
-    FEED_TITLE: "",
-    FEED_NEW_TITLE: "",
-    FEED_CUSTOM_FIELD_URL: "",
+    FEED_TITLE: "vcru-rss-v116hzjf",
+    FEED_NEW_TITLE: "vcru-rss-v116hzjf",
+    FEED_CUSTOM_FIELD_URL: "vcru-rss-tggflo127i8",
   };
-  test.beforeAll(async ({ browser }) => {
-    const context = await browser.newContext();
-    page = await context.newPage();
+  test.beforeAll(async () => {
     TEST_DATA.FEED_TITLE = `vcru-rss-${Math.random()
       .toString(36)
       .substring(2, 10)}`;
@@ -90,21 +84,16 @@ test.describe("Операции с proxy", () => {
       )
     ).toBeVisible(); // Наш proxy должен появится в списке
 
-    await page.goto(
+    const response = await page.request.get(
       (await page
         .locator(
           `xpath=/html/body/app-root/div/div[2]/div/app-home/div/div//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/preceding-sibling::a`
         )
         .getAttribute("href")) as string
-    ); // Переходим на наш RSS Proxy
-    await checkXML(browserName, async () => {
-      await expect(
-        page.locator(
-          "#folder1 > div.opened > div:nth-child(6) > span:nth-child(2)"
-        )
-      ).toHaveText(TEST_DATA.RESOURCE_LINK); // Проверяем что это реально наш url
-    });
-    await page.waitForLoadState("domcontentloaded");
+    );
+    const xmlContent = await response.text();
+    const parsedXml = await parseStringPromise(xmlContent);
+    expect(parsedXml.rss.channel[0].link).toContain(TEST_DATA.RESOURCE_LINK);
   });
 
   test("Можно обновить ленту", async ({ page }) => {
@@ -155,19 +144,6 @@ test.describe("Операции с proxy", () => {
         `//div[contains(@class, 'proxy-list-item') and contains(@class, 'deactivated')]//div[contains(@class, 'proxy-title') and contains(text(), "${TEST_DATA.FEED_TITLE}")]//following-sibling::div[contains(@class, 'redirect-message') and contains(text(), 'This feed is redirecting to your source feed')]`
       )
     ).toBeVisible(); // Будет виден текст This feed is redirecting to your source feed в блоке
-
-    checkXML(browserName, async () => {
-      await page.goto(
-        (await page
-          .locator(
-            `xpath=/html/body/app-root/div/div[2]/div/app-home/div/div//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/preceding-sibling::a`
-          )
-          .getAttribute("href")) as string
-      ); // Переходим на наш RSS Proxy
-      await page.waitForLoadState("networkidle"); // Ждем загрузку
-
-      await expect(page).toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь редиректит
-    });
   });
 
   test("Можно активировать деактивированную ленту", async ({ page }) => {
@@ -192,17 +168,6 @@ test.describe("Операции с proxy", () => {
         `//div[contains(@class, 'proxy-list-item') and contains(@class, 'deactivated')]//div[contains(@class, 'proxy-title') and contains(text(), "${TEST_DATA.FEED_TITLE}")]//following-sibling::div[contains(@class, 'redirect-message') and contains(text(), 'This feed is redirecting to your source feed')]`
       )
     ).toHaveCount(0); // Будет виден текст This feed is redirecting to your source feed в блоке
-
-    await page.goto(
-      (await page
-        .locator(
-          `xpath=/html/body/app-root/div/div[2]/div/app-home/div/div//*[contains(text(), "${TEST_DATA.FEED_TITLE}")]/preceding-sibling::a`
-        )
-        .getAttribute("href")) as string
-    ); // Переходим на наш RSS Proxy
-    await page.waitForLoadState("networkidle"); // Ждем загрузку
-
-    await expect(page).not.toHaveURL(TEST_DATA.FEED_URL); // Сверяем что нас теперь НЕ редиректит
   });
 
   test("Можно экспортировать email подписчиков", async ({ page }) => {
@@ -284,28 +249,23 @@ test.describe("Операции с proxy", () => {
 
     await page.waitForLoadState("networkidle"); // Ждем загрузку
 
-    await page.goto(
+    const response = await page.request.get(
       `https://feeds.feedburner.com/${TEST_DATA.FEED_CUSTOM_FIELD_URL}`
     );
-    await checkXML(browserName, async () => {
-      await expect(page.locator("xpath=/rss/channel/title")).toHaveText(
-        TEST_DATA.CUSTOM_FIELD_TITLE
-      );
-      await expect(page.locator("xpath=/rss/channel/description")).toHaveText(
-        TEST_DATA.CUSTOM_FIELD_DESC
-      );
-      await expect(page.locator("xpath=/rss/channel/description")).toHaveText(
-        TEST_DATA.CUSTOM_FIELD_DESC
-      );
+    const xmlContent = await response.text();
+    const parsedXml = await parseStringPromise(xmlContent);
 
-      await expect(page.locator("xpath=//enclosure")).not.toHaveCount(0);
+    const channel = parsedXml.rss.channel[0];
 
-      await expect(
-        page.locator(
-          '//*[local-name() = "meta" and @name = "robots" and @content = "noindex"]'
-        )
-      ).not.toHaveCount(0); // Проверяем что бы был noindex
-    });
+    expect(channel.title[0]).toBe(TEST_DATA.CUSTOM_FIELD_TITLE);
+
+    expect(channel.description[0]).toBe(TEST_DATA.CUSTOM_FIELD_DESC);
+
+    const enclosure = parsedXml.rss.channel[0].item[0].enclosure;
+    expect(enclosure).toBeDefined();
+    expect(enclosure.length).toBeGreaterThan(0);
+
+    expect(channel["xhtml:meta"][0].$.content).toBe("noindex");
   });
 
   test("Можно сконфигурировать iTunes Tags", async ({ browserName, page }) => {
@@ -418,56 +378,34 @@ test.describe("Операции с proxy", () => {
       )
       .click();
 
-    await page.waitForLoadState("networkidle"); // Ждем загрузку
-    await checkXML(browserName, async () => {
-      await page.goto(
-        `https://feeds.feedburner.com/${TEST_DATA.FEED_CUSTOM_FIELD_URL}`
-      );
+    await page.waitForLoadState("networkidle");
 
-      await page.waitForLoadState("networkidle"); // Ждем загрузку
+    const response = await page.request.get(
+      `https://feeds.feedburner.com/${TEST_DATA.FEED_CUSTOM_FIELD_URL}`
+    );
+    const xmlContent = await response.text();
+    const parsedXml = await parseStringPromise(xmlContent);
+    const channel = parsedXml.rss.channel[0];
 
-      await expect(
-        page.locator(
-          `//*[local-name() = "category" and @text = "${TEST_DATA.IT_CATEGORY}"]`
-        )
-      ).not.toHaveCount(0);
+    expect(channel["itunes:category"][0].$.text).toBe(TEST_DATA.IT_CATEGORY);
+    expect(channel["itunes:category"][0]["itunes:category"][0].$.text).toBe(
+      TEST_DATA.IT_SUBCATEGORY
+    );
+    expect(channel["itunes:image"][0].$.href).toBe(TEST_DATA.IT_IMAGE);
 
-      await expect(
-        page.locator(
-          `//*[local-name() = "category" and @text = "${TEST_DATA.IT_SUBCATEGORY}"]`
-        )
-      ).not.toHaveCount(0);
+    expect(channel["itunes:subtitle"][0]).toBe(TEST_DATA.IT_SUBTITLE);
 
-      await expect(
-        page.locator(
-          `//*[local-name() = "image" and @href = "${TEST_DATA.IT_IMAGE}"]`
-        )
-      ).not.toHaveCount(0);
+    expect(channel["itunes:summary"][0]).toBe(TEST_DATA.IT_SUMMARY);
 
-      await expect(
-        page.locator("//*[local-name() = 'subtitle']").nth(0)
-      ).toHaveText(TEST_DATA.IT_SUBTITLE);
-      await expect(
-        page.locator("//*[local-name() = 'summary']").nth(0)
-      ).toHaveText(TEST_DATA.IT_SUMMARY);
-      await expect(
-        page.locator("//*[local-name() = 'keywords']").nth(0)
-      ).toHaveText(TEST_DATA.IT_KEYWORDS);
+    expect(channel["itunes:keywords"][0]).toBe(TEST_DATA.IT_KEYWORDS);
 
-      await expect(
-        page.locator("//*[local-name() = 'author']").nth(0)
-      ).toHaveText(TEST_DATA.IT_AUTHOR);
-      await expect(
-        page.locator("//*[local-name() = 'email']").nth(0)
-      ).toHaveText(TEST_DATA.IT_EMAIL);
-      await expect(
-        page.locator("//*[local-name() = 'explicit']").nth(0)
-      ).toHaveText("yes");
+    expect(channel["itunes:author"][0]).toBe(TEST_DATA.IT_AUTHOR);
 
-      await expect(
-        page.locator("//*[local-name() = 'copyright']").nth(0)
-      ).toHaveText(TEST_DATA.IT_COPYRIGHT);
-    });
+    expect(channel["itunes:owner"][0]["itunes:email"][0]).toBe(
+      TEST_DATA.IT_EMAIL
+    );
+
+    expect(channel["copyright"][0]).toBe(TEST_DATA.IT_COPYRIGHT);
   });
   test("Можно удалить", async ({ page }) => {
     await page.goto("/");

@@ -2,14 +2,14 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   projects: [
-    // {
-    //   name: "chromium",
-    //   use: {
-    //     browserName: "chromium",
-    //     storageState: "auth/auth.json",
-    //     headless: false,
-    //   }
-    // }
+    {
+      name: "chromium",
+      use: {
+        browserName: "chromium",
+        storageState: "auth/auth.json",
+        headless: false,
+      },
+    },
     {
       // Пока без firefox, потом включим
       name: "firefox",
